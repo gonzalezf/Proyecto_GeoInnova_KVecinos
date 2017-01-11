@@ -16,7 +16,8 @@ class Helper {
 	public:
     bool ArchivoExiste(const std::string& name);
 	void ImprimirTiempoTranscurrido(double num);
-	
+	std::vector<std::vector<float>>  loadFile(std::string fileName, int maxVar);
+
 
 };
 

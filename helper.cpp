@@ -19,7 +19,7 @@ void Helper::ImprimirTiempoTranscurrido(double num){
     cout<<"Tiempo Trancurrido: "<<hor<<"h "<<minu<<"m "<<seg<<"s"<<endl;
 }
 
-std::vector<std::vector<float>>  loadFile(std::string fileName, int maxVar){
+std::vector<std::vector<float>>  Helper::loadFile(std::string fileName, int maxVar){
   std::vector<std::vector<float>> data;
   float value;
   std::vector<float> point;
@@ -37,7 +37,7 @@ std::vector<std::vector<float>>  loadFile(std::string fileName, int maxVar){
     std::getline(inFile, line);
   }
   //setear la cantidad de variables a usar
-  if(maxVar==0)
+  if(maxVar==0 or maxVar> numVar)
     maxVar=numVar;
   //leer cada dato
   while (std::getline(inFile, line)) {
