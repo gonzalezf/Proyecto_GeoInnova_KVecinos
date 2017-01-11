@@ -1,31 +1,3 @@
-/***********************************************************************
- * Software License Agreement (BSD License)
- *
- * Copyright 2011-2016 Jose Luis Blanco (joseluisblancoc@gmail.com).
- *   All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *************************************************************************/
-
 #include "../nanoflann/include/nanoflann.hpp"
 
 #include <ctime>
@@ -34,6 +6,8 @@
 
 using namespace std;
 using namespace nanoflann;
+
+#define REAL_DATASET_FILE "juraset.asc"
 
 void dump_mem_usage();
 
@@ -76,35 +50,56 @@ struct PointCloud
 	template <class BBOX>
 	bool kdtree_get_bbox(BBOX& /* bb */) const { return false; }
 
-};
+		// Default ctor.
+	PointCloud() {}
 
-template <typename T>
-void generateRandomPointCloud(PointCloud<T> &point, const size_t N, const T max_range = 10)
-{
-	std::cout << "Generating "<< N << " point cloud...";
-	point.pts.resize(N);
-	for (size_t i=0;i<N;i++)
+	// load dataset in Freiburg 3D scans format:
+	PointCloud(const char* sFil)
 	{
-		point.pts[i].x = max_range * (rand() % 1000) / T(1000);
-		point.pts[i].y = max_range * (rand() % 1000) / T(1000);
-		point.pts[i].z = max_range * (rand() % 1000) / T(1000);
+		FILE *f = fopen(sFil,"rt");
+		if (!f) throw std::runtime_error("can't open dataset file!");
+		pts.clear();
+
+		char str[300];
+		for (size_t i = 0; i < 15; i++) {
+			fgets(str,sizeof(str),f);
+		}
+		while (fgets(str,sizeof(str),f))
+		{
+			float x,y,z;
+			if (sscanf(str,"%f %f %f",&x,&y,&z)==3)
+			{
+					pts.resize(pts.size()+1);
+				pts.rbegin()->x=x;
+				pts.rbegin()->y=y;
+				pts.rbegin()->z=z;
+			}
+		}
+		fprintf(stderr,"Read dataset: %u points\n", static_cast<unsigned int>(pts.size()));
+
+		fclose(f);
 	}
 
-	std::cout << "done\n";
-}
+};
+
+
+
+#ifdef REAL_DATASET_FILE
+PointCloud<float> cloud(REAL_DATASET_FILE);
+#endif
+
 
 
 template <typename num_t>
-void kdtree_demo(const size_t N)
+void kdtree_demo()
 {
-	PointCloud<num_t> cloud;
+	#ifndef REAL_DATASET_FILE
 
-	// Generate points:
-	generateRandomPointCloud(cloud, N);
+		cout << "No existe dataset"<<endl;
 
-	num_t query_pt[3] = { 0.5, 0.5, 0.5};
-
-
+	#else
+		num_t query_pt[3] = { 0, 0, 0}; //elemento a buscar
+	#endif
 	// construct a kd-tree index:
 	typedef KDTreeSingleIndexAdaptor<
 		L2_Simple_Adaptor<num_t, PointCloud<num_t> > ,
@@ -127,8 +122,8 @@ void kdtree_demo(const size_t N)
 		resultSet.init(&ret_index, &out_dist_sqr );
 		index.findNeighbors(resultSet, &query_pt[0], nanoflann::SearchParams(10));
 
-		std::cout << "knnSearch(nn="<<num_results<<"): \n";
-		std::cout << "ret_index=" << ret_index << " out_dist_sqr=" << out_dist_sqr << endl;
+		std::cout << "knnSearch(number results="<<num_results<<"): \n";
+		std::cout << "ret_index=" << ret_index << " distancia max= " << out_dist_sqr << endl;
 	}
 	{
 		// Unsorted radius search:
@@ -149,8 +144,7 @@ int main()
 {
 	// Randomize Seed
 	srand(time(NULL));
-	kdtree_demo<float>(1000000);
-	kdtree_demo<double>(1000000);
+	kdtree_demo<float>();
 	return 0;
 }
 

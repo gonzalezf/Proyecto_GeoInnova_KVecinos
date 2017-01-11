@@ -130,7 +130,15 @@ void generateRandomPointCloud(PointCloud<T> &point, const size_t N, const T max_
 PointCloud<float> cloud(REAL_DATASET_FILE);
 #endif
 
+
+//FIN CARGAR DATASET!
+
+
+
+
 template <typename num_t>
+
+//funcion de prueba, entrega vecino más cercano. se debe definir el max numero
 void perf_test(const size_t max_leaf_elements)
 {
 #ifndef REAL_DATASET_FILE
@@ -139,24 +147,7 @@ void perf_test(const size_t max_leaf_elements)
 
 #else
 	float xUser, yUser, zUser;
-	//num_t query_pt[3] = { my_random(-40.0,40.0), my_random(-40.0,40.0), my_random(0,10)}; //elemento a buscar
 	num_t query_pt[3] = { 0, 0, 0}; //elemento a buscar
-
-	//HABILITAAAR!!
-
-	/*
-	cout <<"Ingresa coordenadas x y z : ";
-	if(scanf("%f %f %f",&xUser, &yUser, &zUser) == 3){
-			cout <<endl;
-			num_t query_pt[3] = { xUser,yUser, zUser};		
-	}
-	else{
-		cout <<"Coordenada aleatoria escogida "<<endl;
-		num_t query_pt[3] = { my_random(-40.0,40.0), my_random(-40.0,40.0), my_random(0,10)};
-
-	}*/
-
-
 #endif
 
 	// construct an randomized kd-tree index using 4 kd-trees
@@ -172,7 +163,7 @@ void perf_test(const size_t max_leaf_elements)
 	index.buildIndex();
 	double t1=get_time();
 	const double At_build = t1-t0;
-	//VERB_COUT << "Build Index<>: " << (t1-t0)*1e3 << " ms\n";
+	VERB_COUT << "Build Index<>: " << (t1-t0)*1e3 << " ms\n";
 
 	// do a knn search
 	t0=get_time();
@@ -187,8 +178,8 @@ void perf_test(const size_t max_leaf_elements)
 
 	t1=get_time();
 	const double At_search = t1-t0;
-	//VERB_COUT << "knnSearch(nn="<<num_results<<"): " << (t1-t0)*1e3 << " ms\n";
-	VERB_COUT << "ret_index=" << ret_index << " out_dist_sqr=" << out_dist_sqr << endl;
+	VERB_COUT << "knnSearch(num results= "<<num_results<<"): " << (t1-t0)*1e3 << " ms\n";
+	VERB_COUT << "ret_index=" << ret_index << " distancia max" << out_dist_sqr << endl;
 
 	// Output for stats generation:
 	cout
@@ -199,25 +190,14 @@ void perf_test(const size_t max_leaf_elements)
 
 }
 
+
+
 int main(int argc, char** argv)
 {
-	// Max. number of elements per tree leaf:
-	//	size_t MaxLeafs[]  = {  1,   2,   3,   4,   5,  10,  20,  50, 100, 500,1000, 10000};
-	
-	/*
-	for (size_t i=0;i<sizeof(MaxLeafs)/sizeof(MaxLeafs[0]);i++)
-	{
-		const size_t nPts = 1e5;
-		const size_t nReps = 200;
-		const size_t maxLeaf = MaxLeafs[i];
 
-		cerr << " ==== nPts:" << nPts << " === Max.Leaf: " << maxLeaf << "\n"; cerr.flush();
-	}*/
 	size_t maxLeaf = 50; // VARIAR ENTRE 10 Y 50!
-	for(int i = 0; i < 100; i++){
-		perf_test<float>(maxLeaf);
+	perf_test<float>(maxLeaf);
 
-	}
 
 
 	return 0;
