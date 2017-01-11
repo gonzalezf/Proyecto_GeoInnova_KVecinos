@@ -7,7 +7,7 @@ using namespace std;
 using namespace nanoflann;
 
 
-void dump_mem_usage();
+//void dump_mem_usage();
 
 struct PointCloud
 {
@@ -17,7 +17,6 @@ struct PointCloud
   };
 
   std::vector<Point>  pts;
-
   // Must return the number of data points
   inline size_t kdtree_get_point_count() const { return pts.size(); }
 
@@ -112,7 +111,7 @@ void kdtree_demo(string fileName, int dimensionNumber)
     std::cout << "knnSearch(nn="<<num_results<<"): \n";
     std::cout << "ret_index=" << ret_index << " out_dist_sqr=" << out_dist_sqr << endl;
   }
-  */
+
     // Unsorted radius search:
     /*
     {
@@ -127,7 +126,7 @@ void kdtree_demo(string fileName, int dimensionNumber)
     cout << "Worst pair: idx=" << worst_pair.first << " dist=" << worst_pair.second << endl;
     }
     */
-  
+
 
 }
 
@@ -196,8 +195,8 @@ int main()
                     cin>>tmp1;
                     b.remove(tmp1);
                     break;
-           case 6 : 
+           case 6 :
                     return 0;
-                    
+
        }
     }*/
