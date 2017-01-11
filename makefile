@@ -1,19 +1,18 @@
 # Set up basic variables:
 CC         = g++
-CFLAGS     = -c -Wall -O3 -mtune=native
+CFLAGS     = -c -Wall -O3 -std=c++11 -g
 LDFLAGS    =
-
 # List of sources:
-#SOURCES1    = test_nanoflann.cpp
-#OBJECTS1    = $(SOURCES1:.cpp=.o)
+SOURCES1    = test.cpp
+OBJECTS1    = $(SOURCES1:.cpp=.o)
 
-SOURCES2    = test.cpp
+SOURCES2    = test2.cpp
 OBJECTS2    = $(SOURCES2:.cpp=.o)
 
 # Name of executable target:
-#EXECUTABLE1 = test_nanoflann
+EXECUTABLE1 = test
 
-EXECUTABLE2 = test
+EXECUTABLE2 = test2
 
 
 # MRPT specific flags:
@@ -27,12 +26,13 @@ EXECUTABLE2 = test
 all: $(SOURCES) $(EXECUTABLE1) $(EXECUTABLE2)
 
 $(EXECUTABLE1): $(OBJECTS1)
-	$(CC) $(LDFLAGS) $(OBJECTS1) -o $@
+	$(CC)  $(LDFLAGS) $(OBJECTS1) -o $@
 
 $(EXECUTABLE2): $(OBJECTS2)
-	$(CC) $(LDFLAGS) $(OBJECTS2) -o $@
+	$(CC)  $(LDFLAGS) $(OBJECTS2) -o $@
 
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
+	rm -rf $(EXECUTABLE1) $(EXECUTABLE2) $(OBJECTS1) $(OBJECTS2)
